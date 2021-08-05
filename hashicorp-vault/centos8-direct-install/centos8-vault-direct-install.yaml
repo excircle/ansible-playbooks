@@ -1,6 +1,6 @@
 ---
 - name: Configure Vault
-  hosts: dev-box
+  hosts: vault-1
   become: yes
   tasks:
      - name: Install Yum Utils

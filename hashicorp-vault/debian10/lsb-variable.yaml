@@ -1,0 +1,10 @@
+---
+- name: JSON Handling
+  hosts: deb-vault-1
+  tasks:
+     - name: Grab Json
+       shell:
+         "echo $(lsb_release -cs)"
+       register: example
+       tags: example
+     - debug: msg="{{example.stdout}}"

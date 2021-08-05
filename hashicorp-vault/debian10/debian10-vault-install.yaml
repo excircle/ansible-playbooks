@@ -1,0 +1,33 @@
+---
+- name: Configure Vault
+  hosts: deb-vault-1
+  become: yes
+  tasks:
+     - name: Grab Debian Version
+       shell:
+         "echo $(lsb_release -cs)"
+       register: deb_version
+       tags: deb_version
+     - name: Initial Update Apt
+       apt:
+         update_cache: yes
+     - name: Install init dependencies
+       apt:
+         pkg:
+         - curl
+         - gnupg
+         - vim
+         - software-properties-common
+     - name: Add HashiCorp GPG Key
+       ansible.builtin.apt_key:
+         url: https://apt.releases.hashicorp.com/gpg
+         state: present
+     - name: Add HashiCorp Repo
+       command: "sudo apt-add-repository \"deb [arch=amd64] https://apt.releases.hashicorp.com {{deb_version.stdout}} main\""
+     - name: Update HashiCorp Repo
+       apt:
+         update_cache: yes
+     - name: Install Vault
+       apt:
+         name: vault
+         state: present
