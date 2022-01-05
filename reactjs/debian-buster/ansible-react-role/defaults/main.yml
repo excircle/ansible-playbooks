@@ -1,0 +1,9 @@
+---
+application_directory: /app
+application_name: demo
+
+react_root: '{{ application_directory }}/web'
+
+validation_path: '{{ react_root }}/{{ application_name }}'
+
+general_user: app-user

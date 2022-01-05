@@ -1,0 +1,11 @@
+---
+general_user: 'app-user'
+general_group: 'devs'
+general_home_directory: /home/app-user
+general_create_account: true
+
+application_directory: '/app'
+
+node_directory: '{{ application_directory }}/web'
+mysql_data_directory: '{{ application_directory }}/mysql'
+golang_api_directory: '{{ application_directory }}/api'

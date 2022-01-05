@@ -1,0 +1,61 @@
+---
+- name: Build ansible_facts.packages info
+  package_facts:
+    manager: auto
+
+- name: Ensure '/app' exists
+  ansible.builtin.shell:
+    'if [ -d "{{ application_directory }}" ]; then echo "true"; else echo "false"; fi'
+  register: app_dir_exists
+  tags: app_dir_exists
+
+- name: Download RPM repo for Nodejs 16
+  ansible.builtin.get_url:
+    url: https://rpm.nodesource.com/setup_16.x
+    dest: /app/node-rpm.sh
+    mode: '0755'
+  when: app_dir_exists.stdout == 'true' and ansible_pkg_mgr == 'dnf'
+
+- name: Download APT repo for Nodejs 16
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/setup_16.x
+    dest: /app/node-apt.sh
+    mode: '0755'
+  when: '"nodejs" not in ansible_facts.packages'
+
+- name: Execute Repository script for Nodejs 16
+  ansible.builtin.shell:
+    bash node-*.sh >> node.log
+  args:
+    chdir: /app
+  when: '"nodejs" not in ansible_facts.packages'
+
+- name: Installing NodeJS via apt
+  ansible.builtin.apt:
+    name:
+      - nodejs
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'apt' and '"nodejs" not in ansible_facts.packages'
+
+- name: Installing NodeJS via dnf
+  ansible.builtin.dnf:
+    name:
+      - nodejs
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: Determine If React App exists
+  ansible.builtin.shell:
+    'if [ -d "{{ validation_path }}" ]; then echo "true"; else echo "false"; fi'
+  register: react_app_exists
+  tags: react_app_exists
+
+- name: Install React App
+  ansible.builtin.command: 
+    "npx --yes create-react-app {{ application_name }}"
+  become_user: "{{ general_user }}"
+  args:
+    chdir: '{{ react_root }}'
+  when: react_app_exists.stdout == 'false'
