@@ -12,6 +12,7 @@
       - epel-release
       - htop
       - ack
+      - git
     state: present
     update_cache: true
   when: ansible_pkg_mgr == 'yum'
@@ -20,6 +21,7 @@
   ansible.builtin.apt:
     name:
       - ack
+      - git
       - acl
       - unzip
       - curl
@@ -47,6 +49,7 @@
       - nmap-ncat
       - jq
       - epel-release
+      - git
     state: present
     update_cache: true
   when: ansible_pkg_mgr == 'dnf'
