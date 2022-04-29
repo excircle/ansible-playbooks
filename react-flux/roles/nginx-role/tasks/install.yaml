@@ -1,0 +1,14 @@
+---
+- name: Installing Nginx dependencies via dnf
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: Installing Nginx dependencies via apt
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'apt'

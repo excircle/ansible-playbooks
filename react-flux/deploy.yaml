@@ -1,0 +1,6 @@
+---
+- hosts: wolfhouse.local
+  become: true
+  roles:
+    - dependancies-role
+    - react-role

@@ -1,0 +1,2 @@
+[wolfhouse.local]
+wolfhouse  ansible_python_interpreter=/usr/bin/python3 ansible_become_method=sudo

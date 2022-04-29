@@ -1,0 +1,87 @@
+---
+- name: Ensure '/app' exists
+  ansible.builtin.shell:
+    'if [ -d "{{ application_directory }}" ]; then echo "true"; else echo "false"; fi'
+  register: app_dir_exists
+  tags: app_dir_exists
+
+- name: Download RPM repo for Nodejs 16
+  get_url:
+    url: https://rpm.nodesource.com/setup_16.x
+    dest: /app/node-rpm.sh
+    mode: '0755'
+  when: 
+    - app_dir_exists.stdout == 'true'
+    - ansible_pkg_mgr == 'yum'
+
+- name: Download APT repo for Nodejs 16
+  get_url:
+    url: https://deb.nodesource.com/setup_16.x
+    dest: /app/node-deb.sh
+    mode: '0755'
+  when: 
+    - app_dir_exists.stdout == 'true'
+    - ansible_pkg_mgr == 'apt'
+
+- name: Execute RPM script for Nodejs 16
+  ansible.builtin.shell:
+    bash node-rpm.sh >> node-rpm.log
+  args:
+    chdir: /app
+  when: 
+    - ansible_pkg_mgr == 'yum'
+    - app_dir_exists.stdout == 'true'
+
+- name: Execute APT script for Nodejs 16
+  ansible.builtin.shell:
+    bash node-deb.sh >> node-deb.log
+  args:
+    chdir: /app
+  when: 
+    - ansible_pkg_mgr == 'apt'
+    - app_dir_exists.stdout == 'true'
+
+- name: Installing RHEL NodeJS 16
+  ansible.builtin.dnf:
+    name:
+      - nodejs
+    state: present
+    update_cache: true
+  when: 
+    - ansible_pkg_mgr == 'dnf'
+    - app_dir_exists.stdout == 'true'
+
+- name: Installing APT NodeJS 16
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: true
+  when: 
+    - ansible_pkg_mgr == 'apt'
+    - app_dir_exists.stdout == 'true'
+
+- name: Install React App
+  ansible.builtin.command: 
+    "npx --yes create-react-app {{ react_directory_name }}"
+  become_user: "akalaj"
+  args:
+    chdir: /app
+  when: app_dir_exists.stdout == 'true'
+  
+- name: Ensure '/app/dojo-react' exists
+  ansible.builtin.shell:
+    'if [[ -d "{{ react_directory }}" ]]; then echo "true"; else echo "false"; fi'
+  register: react_dir_exists
+  tags: react_dir_exists
+  when: app_dir_exists.stdout == 'true'
+
+- name: Change ownership of react directory
+  ansible.builtin.file:
+    path: "{{ react_directory }}"
+    state: directory
+    recurse: yes
+    owner: "akalaj"
+    group: "akalaj"
+  when: 
+    - app_dir_exists.stdout == 'true'
+    - react_dir_exists.stdout == 'true'
