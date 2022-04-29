@@ -1,0 +1,7 @@
+---
+general_user: 'dojo'
+general_group: 'dojo'
+general_home_directory: /home/dojo
+general_create_account: true
+
+application_directory: '/app'

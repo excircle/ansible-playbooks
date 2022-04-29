@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - ansible-general-role
+    - ansible-react-role
+    - ansible-nginx-role

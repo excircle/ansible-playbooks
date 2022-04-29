@@ -1,0 +1,14 @@
+---
+general_user: 'app'
+general_group: 'app'
+general_home_directory: /home/app
+general_create_account: false
+
+node_project: wolfhouse
+
+application_directory: '/app'
+
+node_directory: '{{ application_directory }}/{{node_project}}'
+nginx_root_directory: '{{ node_directory }}/public'
+mysql_data_directory: '{{ application_directory }}/mysql'
+golang_api_directory: '{{ application_directory }}/api'

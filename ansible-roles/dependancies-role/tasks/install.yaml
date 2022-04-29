@@ -1,0 +1,90 @@
+---
+- name: Installing general dependencies via yum
+  ansible.builtin.yum:
+    name:
+      - unzip
+      - wget
+      - tree
+      - mlocate
+      - curl
+      - nmap-ncat
+      - jq
+      - epel-release
+      - htop
+      - ack
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'yum'
+
+- name: Installing general dependencies via apt
+  ansible.builtin.apt:
+    name:
+      - unzip
+      - wget
+      - tree
+      - mlocate
+      - ncat
+      - nmap
+      - jq
+      - htop
+      - ack
+      - curl
+      - software-properties-common
+      - gnupg
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'apt'
+
+- name: Installing Vault dependencies via dnf
+  ansible.builtin.dnf:
+    name:
+      - unzip
+      - wget
+      - tree
+      - mlocate
+      - curl
+      - nmap-ncat
+      - jq
+      - epel-release
+    state: present
+    update_cache: true
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: Creating general group
+  ansible.builtin.group:
+    name: '{{ general_group }}'
+    system: true
+  when: general_create_account
+
+- name: Creating general group
+  ansible.builtin.group:
+    name: '{{ general_group }}'
+    system: true
+  when: general_create_account
+
+- name: Creating general dojo user
+  ansible.builtin.user:
+    name: '{{ general_user }}'
+    home: '{{ general_home_directory }}'
+    group: '{{ general_group }}'
+    shell: /sbin/nologin
+    system: true
+  when: general_create_account
+
+- name: Creating Application directories
+  ansible.builtin.file:
+    state: directory
+    recurse: true
+    path: '{{ item }}'
+    owner: 'akalaj'
+    group: 'akalaj'
+    mode: '0775'
+  with_items:
+    - '{{ application_directory }}'
+
+- name: Setting client environment variables
+  copy:
+    content: |
+      alias ll='ls -lah'
+    dest: "/etc/profile.d/99-general.sh"
+    mode: 0644

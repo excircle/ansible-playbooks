@@ -1,0 +1,9 @@
+---
+application_directory: /app
+
+react_version: 14
+react_directory_name: wolfhouse
+react_directory: "{{ application_directory }}/{{ react_directory_name }}"
+
+general_user: dojo
+general_group: dojo
